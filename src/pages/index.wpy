@@ -1,0 +1,128 @@
+<style type="less" src="../style/home.less"></style>
+<style type="less" src="../style/power.less"></style>
+<style type="less" src="../style/paper.less"></style>
+<style type="less" src="../style/animation.less"></style>
+<template>
+  <view class="home_bg">
+    <view class="home_container">
+        <view class="charts_avatar">
+          <image class="avatar_image" src="{{userInfo.avatarUrl}}"></image>
+        </view>
+        <view class="clock">
+          <text>{{time}}</text>
+        </view>
+        <view class="charts_avatar2">
+          <image class="avatar_image2" src="{{otherPeople.avatarUrl}}"></image>
+          <!-- <text>{{time}}</text> -->
+        </view>
+    </view>
+
+    <view class='number {{number_animat}}'>
+      <text>{{question.subject}}</text>
+    </view>
+    <view class="questionlist answer {{answer_animat}}">
+        <view class="question">{{question.title}}</view>
+        <view class="choiceitem {{s_A}}" hover-class="choiceSelected" @tap="answer_sure" data-val="A">
+          {{question.A}}
+        </view>
+        <view class="choiceitem {{s_B}}" hover-class="choiceSelected" @tap="answer_sure" data-val="B">
+          {{question.B}}
+        </view>
+        <view class="choiceitem {{s_C}}" hover-class="choiceSelected" @tap="answer_sure" data-val="C">
+          {{question.C}}
+        </view>
+        <view class="choiceitem {{s_D}}" hover-class="choiceSelected" @tap="answer_sure" data-val="D">
+          {{question.D}}
+        </view>
+    </view>
+
+</view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import bt from '../lib/bt'
+  import setting from '../lib/setting'
+  import socket from '../lib/socket'
+  import message from '../lib/message'
+  import answer from '../lib/answer'
+
+  export default class Index extends wepy.page {
+
+    data = {
+      input_txt: '',
+      bindinputInfo_text : '',
+      userInfo : {},
+      question_list : [],
+      question : {},
+      question_index : null,
+      time : setting.config.time,
+      answer_animat : '',
+      number_animat : '',
+      room_id : '',
+      otherPeople:{},
+      isAnswer:false
+    };
+
+    methods = {
+      bindinput(e){
+        this.input_txt = e.detail.value;
+      },
+      bindinputInfo(e){
+        this.bindinputInfo_text = e.detail.value;
+      },
+      send(){
+        socket.send({type : 'msg' , msg : this.input_txt})
+      },
+      getInfo(){
+        socket.send({type : 'info' , openid : this.bindinputInfo_text})
+      },
+      answer_sure( e ){
+        if(this.isAnswer===true){
+          bt.toast('已经回答过了',1000);
+          return false;
+        }
+        this.isAnswer=true;
+        this.$apply();
+        let answer_info = this.question;
+        let sure_info = e.target.dataset.val;
+        let info = { question_id: answer_info.id, time: this.time,subject: answer_info.subject };
+        if (answer_info.answer.toUpperCase() == sure_info.toUpperCase()) {
+          info.result = 'yes';
+        } else {
+          info.result = 'no';
+        }
+        bt.toast(`回答 ${info.result}`,1000);
+      }
+    };
+
+     watch = {
+      question_index(newValue, oldValue){
+        bt.log('watch > ' + newValue);
+        this.question = this.question_list[ newValue ];
+        // console.log(this.question_list);
+        this.$apply();
+      },
+      room_id(newValue, oldValue){
+        bt.log('当前房间号 > ' + newValue);
+      }
+    }
+
+    // 消息回调
+    message_handle( res ){
+      // console.log(res);
+      message.handle(res,this);
+    }
+
+    onShow() {
+      this.$parent.getUserInfo( res =>{
+        this.userInfo = this.$parent.globalData.userInfo = res;
+        // console.log(this.userInfo);
+        this.$apply();
+
+        socket.init(bt.random(),this);
+      });
+    }
+
+  }
+</script>
