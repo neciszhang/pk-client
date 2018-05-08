@@ -23,16 +23,24 @@
     <view class="questionlist answer {{answer_animat}}">
         <view class="question">{{question.title}}</view>
         <view class="choiceitem {{s_A}}" hover-class="choiceSelected" @tap="answer_sure" data-val="A">
+          <view class="choiceleft" wx:if='{{choiceLeft.selectA==true}}'>选择</view>
           {{question.A}}
+          <view class="choiceright" wx:if='{{choiceRight.selectA==true}}'>选择</view>
         </view>
         <view class="choiceitem {{s_B}}" hover-class="choiceSelected" @tap="answer_sure" data-val="B">
+          <view class="choiceleft" wx:if='{{choiceLeft.selectB==true}}'>选择</view>
           {{question.B}}
+          <view class="choiceright" wx:if='{{choiceRight.selectB==true}}'>选择</view>
         </view>
         <view class="choiceitem {{s_C}}" hover-class="choiceSelected" @tap="answer_sure" data-val="C">
+          <view class="choiceleft" wx:if='{{choiceLeft.selectC==true}}'>选择</view>
           {{question.C}}
+          <view class="choiceright" wx:if='{{choiceRight.selectC==true}}'>选择</view>
         </view>
         <view class="choiceitem {{s_D}}" hover-class="choiceSelected" @tap="answer_sure" data-val="D">
+          <view class="choiceleft" wx:if='{{choiceLeft.selectD==true}}'>选择</view>
           {{question.D}}
+          <view class="choiceright" wx:if='{{choiceRight.selectD==true}}'>选择</view>
         </view>
     </view>
 
@@ -61,7 +69,19 @@
       number_animat : '',
       room_id : '',
       otherPeople:{},
-      isAnswer:false
+      isAnswer:false,
+      choiceLeft:{
+        'selectA':false,
+        'selectB':false,
+        'selectC':false,
+        'selectD':false,
+      },
+      choiceRight:{
+        'selectA':false,
+        'selectB':false,
+        'selectC':false,
+        'selectD':false,
+      }
     };
 
     methods = {
@@ -83,7 +103,6 @@
           return false;
         }
         this.isAnswer=true;
-        this.$apply();
         let answer_info = this.question;
         let sure_info = e.target.dataset.val;
         let info = { question_id: answer_info.id, time: this.time,subject: answer_info.subject };
@@ -92,6 +111,21 @@
         } else {
           info.result = 'no';
         }
+        switch(sure_info){
+          case 'A':
+            this.choiceLeft.selectA=true;
+            break;
+          case 'B':
+            this.choiceLeft.selectB=true;
+            break;
+          case 'C':
+            this.choiceLeft.selectC=true;
+            break;
+          case 'D':
+            this.choiceLeft.selectD=true;
+            break;
+        }
+        this.$apply();
         bt.toast(`回答 ${info.result}`,1000);
       }
     };
