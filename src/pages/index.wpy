@@ -108,8 +108,10 @@
         let info = { question_id: answer_info.id, time: this.time,subject: answer_info.subject };
         if (answer_info.answer.toUpperCase() == sure_info.toUpperCase()) {
           info.result = 'yes';
+          info.message = "正确";
         } else {
           info.result = 'no';
+          info.message = "错误";
         }
         switch(sure_info){
           case 'A':
@@ -126,7 +128,8 @@
             break;
         }
         this.$apply();
-        bt.toast(`回答 ${info.result}`,1000);
+        socket.send(info);
+        bt.toast(`回答 ${info.message}`,1000);
       }
     };
 
