@@ -3,7 +3,18 @@
 <style type="less" src="../style/paper.less"></style>
 <style type="less" src="../style/animation.less"></style>
 <template>
-  <view class="home_bg">
+  <!-- 首页 -->
+  <view class="page1" wx:if="{{showPk===false}}">
+    <view class="home_container">
+        <view class="charts_avatar">
+          <image class="avatar_image" src="{{userInfo.avatarUrl}}"></image>
+        </view>
+    </view>
+    <button class="p1_btn" type="primary" @tap="pk_personal">单人匹配</button>
+    <button class="p1_btn" type="default" @tap="pk_friend">好友对战</button>
+    <button class="p1_btn" type="warn" @tap="pk_rebot">人机对战</button>
+  </view>
+  <view class="home_bg" wx:if="{{showPk===true}}">
     <view class="home_container">
         <view class="charts_avatar">
           <image class="avatar_image" src="{{userInfo.avatarUrl}}"></image>
@@ -70,6 +81,7 @@
       room_id : '',
       otherPeople:{},
       isAnswer:false,
+      showPk:false,
       choiceLeft:{
         'selectA':false,
         'selectB':false,
@@ -130,6 +142,15 @@
         this.$apply();
         socket.send(info);
         bt.toast(`回答 ${info.message}`,1000);
+      },
+      pk_personal(){
+        this.showPk=!this.showPk;
+      },
+      pk_friend(){
+        this.showPk=!this.showPk;
+      },
+      pk_rebot(){
+        this.showPk=!this.showPk;
       }
     };
 

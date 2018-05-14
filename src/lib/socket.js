@@ -1,5 +1,9 @@
 import bt from './bt';
 import message from './message';
+import setting from './setting';
+
+const MSG_TYPE = setting.config.msg_type;
+
 
 var __socket = function() {}
 
@@ -8,6 +12,7 @@ __socket.prototype.init = function(openid = null, self) {
         this.openid = openid;
         this.self = self;
         this.userInfo = this.self.userInfo;
+        this.type = MSG_TYPE.pair_start;
     }
     this.socketStatus = false;
     this.connection();
