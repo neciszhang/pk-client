@@ -34,7 +34,7 @@ __message.prototype.handle = function(info, self) {
   // console.log(this.question);
   this.apply();
 
-  if (info.type == MSG_TYPE.pair_success) {
+  if (info.type == MSG_TYPE.pk_start) {
     wx.hideLoading();
     bt.toast('匹配完成,开始游戏', 1000);
     this.start_question();

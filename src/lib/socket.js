@@ -11,6 +11,7 @@ __socket.prototype.init = function(openid = null, self) {
     if (openid) {
         this.openid = openid;
         this.self = self;
+        this.self.openid = openid;
         this.userInfo = this.self.userInfo;
         this.type = MSG_TYPE.pair_start;
     }
@@ -22,7 +23,7 @@ __socket.prototype.connection = function() {
     bt.log('正在链接socket');
     wx.connectSocket({
         // url: 'wss://socket.5i5s.net?openid=' + this.openid,
-        url: 'wss://localhost:8100',
+        url: 'wss://localhost:8100?openid=' + this.openid,
         header: {
             'openid': this.openid,
             'avatarUrl': this.userInfo.avatarUrl,
@@ -32,10 +33,10 @@ __socket.prototype.connection = function() {
     });
     wx.onSocketOpen((res) => {
         this.socketStatus = true;
-        wx.showLoading({
-            title: '正在匹配选手...',
-            mask: true
-        });
+        // wx.showLoading({
+        //     title: '正在匹配选手...',
+        //     mask: true
+        // });
     });
     // 接受消息进行页面相应显示
     wx.onSocketMessage((res) => {
@@ -44,6 +45,7 @@ __socket.prototype.connection = function() {
 }
 // 发送消息
 __socket.prototype.send = function(message) {
+    bt.log(message);
     if (this.socketStatus) {
         wx.sendSocketMessage({
             data: JSON.stringify(message)

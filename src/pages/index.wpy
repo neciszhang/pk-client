@@ -66,11 +66,14 @@
   import message from '../lib/message'
   import answer from '../lib/answer'
 
+  const MSG_TYPE = setting.config.msg_type;
+
   export default class Index extends wepy.page {
 
     data = {
       input_txt: '',
       bindinputInfo_text : '',
+      openid:'',
       userInfo : {},
       question_list : [],
       question : {},
@@ -151,6 +154,15 @@
       },
       pk_rebot(){
         this.showPk=!this.showPk;
+        // this.connectSocket();
+        let message={
+          'type':MSG_TYPE.robot_start,
+          'openid': this.openid,
+          'avatarUrl': this.userInfo.avatarUrl,
+          'nickName': this.userInfo.nickName,
+          'status': 'on'
+        }
+        socket.send(message);
       }
     };
 
@@ -177,9 +189,13 @@
         this.userInfo = this.$parent.globalData.userInfo = res;
         // console.log(this.userInfo);
         this.$apply();
+        this.connectSocket();
 
-        socket.init(bt.random(),this);
       });
+    }
+
+    connectSocket(){
+      socket.init(bt.random(),this);
     }
 
   }
